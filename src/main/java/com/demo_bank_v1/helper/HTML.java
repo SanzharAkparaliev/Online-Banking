@@ -2,7 +2,7 @@ package com.demo_bank_v1.helper;
 
 public class HTML {
     public static String htmlEmailTemplate(String token,int code){
-        String url = "http://localhost:8080/register/verify?token=" + token + "&code=" + code;
+        String url = "http://localhost:8000/verify?token=" + token + "&code=" + code;
         String emailTemplate = "<!DOCTYPE html>\n" +
                 "<html lang='en'>\n" +
                 "<head>\n" +

@@ -14,7 +14,7 @@
         }
         body{
             height: 100vh;
-            background-image: url("../images/main_bg.png");
+            background-image: url("./images/main_bg.png");
             background-size: cover;
             background-position: center center;
             background-repeat: no-repeat;
@@ -35,10 +35,14 @@
 
         <div class="card-body">
             <p class="card-text">
-                Lorem ipsum dolor sit amet consectetur adipisicing elit. Illo illum iste tempore fugit, perferendis a quibusdam aperiam,  doloremque sapiente fugiat.
+                <c:if test="${requestScope.error != null}">
+                    <div class="alert alert-danger text-center border border-danger">
+                        <b>${requestScope.error}</b>
+                    </div>
+                </c:if>
             </p>
             <hr>
-            <a href="login.html" class="btn  btn-sm btn-danger">
+            <a href="/login" class="btn  btn-sm btn-danger">
                 <i class="fa fa-arrow-circle-left mr-2" aria-hidden="true"></i>Back
             </a>
         </div>

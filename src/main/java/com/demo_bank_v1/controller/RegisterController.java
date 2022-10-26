@@ -71,7 +71,7 @@ public class RegisterController {
         userRepository.registerUser(first_name,last_name,email,hashed_password,token,code);
 
         // TODO: SEND EMAIL NOTIFICATION:
-        boolean flag = messanger.sendEmail("Verify Account", emailBody, email);
+        messanger.sendEmail("Verify Account", emailBody, email);
 
         //todo: send email notification
         String seccussMessage = "Account Registered Successfully,Please check your Email and Verify Account ";

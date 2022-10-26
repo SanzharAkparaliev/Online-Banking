@@ -21,4 +21,13 @@ public interface UserRepository extends JpaRepository<User,Integer> {
                       @Param("password")String password,
                       @Param("token") String token,
                       @Param("code")int code);
+
+    @Modifying
+    @Query(value = "UPDATE user SET token=null, code=null, verify=1, varify_at=NOW(), updated_at=NOW() WHERE " +
+            "token= :token AND code= :code", nativeQuery = true)
+    @Transactional
+    void verifyAccount(@Param("token")String token, @Param("code") String code);
+
+    @Query(value = "select token from user where token= :token",nativeQuery = true)
+    String checkToken(@Param("token") String token);
 }
