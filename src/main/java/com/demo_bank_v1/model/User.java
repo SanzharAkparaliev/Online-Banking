@@ -1,9 +1,6 @@
 package com.demo_bank_v1.model;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 import javax.validation.constraints.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -29,7 +26,8 @@ public class User {
     private String password;
     private String token;
     private String code;
-    private int verify;
+    @Column(columnDefinition = "integer default 0")
+    private int verify ;
     private LocalDate varify_at;
     private LocalDateTime created_at;
     private LocalDateTime updated_at;
