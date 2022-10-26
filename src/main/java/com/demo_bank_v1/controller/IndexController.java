@@ -21,10 +21,18 @@ public class IndexController {
         return getLoginPage;
     }
 
-    @GetMapping("/register")
-    public ModelAndView getRegister(){
-        ModelAndView getRegisterPage = new ModelAndView("register");
-        getRegisterPage.addObject("PageTitle","Register");
-        return getRegisterPage;
+
+    @GetMapping("/error")
+    public ModelAndView getError(){
+        ModelAndView getErrorPage = new ModelAndView("error");
+        getErrorPage.addObject("PageTitle","Errors");
+        return getErrorPage;
+    }
+
+    @GetMapping("/verify")
+    public ModelAndView getVerify(){
+        ModelAndView getVerifyPage = new ModelAndView("login");
+        getVerifyPage.addObject("PageTitle","Errors");
+        return getVerifyPage;
     }
 }
