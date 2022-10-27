@@ -30,4 +30,10 @@ public interface UserRepository extends JpaRepository<User,Integer> {
 
     @Query(value = "select token from user where token= :token",nativeQuery = true)
     String checkToken(@Param("token") String token);
+
+    @Query(value = "select email from user where email = :email",nativeQuery = true)
+    String getUserEmail(@Param("email") String email);
+
+    @Query(value = "select password from user where email = :email",nativeQuery = true)
+    String getUserPassword(@Param("email") String email);
 }

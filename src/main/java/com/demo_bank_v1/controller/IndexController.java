@@ -1,5 +1,4 @@
 package com.demo_bank_v1.controller;
-
 import com.demo_bank_v1.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -7,7 +6,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
-import java.awt.*;
 
 @Controller
 public class IndexController {
@@ -20,12 +18,7 @@ public class IndexController {
         return getIndexPage;
     }
 
-    @GetMapping("/login")
-    public ModelAndView getLogin(){
-        ModelAndView getLoginPage = new ModelAndView("login");
-        getLoginPage.addObject("PageTitle","Login");
-        return getLoginPage;
-    }
+
 
 
     @GetMapping("/err")
