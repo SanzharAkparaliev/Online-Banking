@@ -12,7 +12,7 @@
     <div class="offcanvas-body">
         <div class="card">
             <div class="card-body">
-                <form action="" class="add-account-form">
+                <form action="/account/creating_account" method="post" class="add-account-form">
                     <div class="form-group mb-3">
                         <label for="">Enter Account Name</label>
                         <input type="text" name="account_name" class="form-control" placeholder="Enter Account name..">

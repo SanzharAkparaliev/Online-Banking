@@ -17,6 +17,8 @@ public class Account {
     private String account_number;
     private String account_name;
     private String account_type;
+    @Column(columnDefinition = "DECIMAL(18, 2) DEFAULT 0.00")
+
     private BigDecimal balance;
     private LocalDateTime created_at;
     private LocalDateTime updated_at;

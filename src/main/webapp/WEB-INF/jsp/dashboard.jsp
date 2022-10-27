@@ -23,6 +23,20 @@
     <c:import  url="components/transact_offcanvas.jsp"/>
     <c:import  url="components/add_account_offcanvas.jsp"/>
 
+    <div class="container">
+        <c:if test="${success != null}">
+            <div class="alert alert-info text-center border border-info">
+                <b>${success}</b>
+            </div>
+        </c:if>
+        <c:if test="${error != null}">
+            <div class="alert alert-danger text-center border border-danger">
+                <b>${error}</b>
+            </div>
+        </c:if>
+    </div>
+
+
     <c:choose>
         <c:when test="${fn:length(userAccounts) > 0}">
             <c:import url="components/accounts_display.jsp" />
