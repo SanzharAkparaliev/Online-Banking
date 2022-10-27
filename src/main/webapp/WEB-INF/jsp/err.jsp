@@ -14,7 +14,7 @@
         }
         body{
             height: 100vh;
-            background-image: url("./images/main_bg.png");
+            background-image: url("../images/main_bg.png");
             background-size: cover;
             background-position: center center;
             background-repeat: no-repeat;

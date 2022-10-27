@@ -21,12 +21,7 @@ public class IndexController {
 
 
 
-    @GetMapping("/err")
-    public ModelAndView getError(){
-        ModelAndView getErrorPage = new ModelAndView("err");
-        getErrorPage.addObject("PageTitle","Errors");
-        return getErrorPage;
-    }
+
 
     @GetMapping("/verify")
     public ModelAndView getVerify(@RequestParam("token")String token,@RequestParam("code")String code){
