@@ -1,6 +1,7 @@
 package com.demo_bank_v1.controller;
 
 import com.demo_bank_v1.helper.Token;
+import com.demo_bank_v1.model.User;
 import com.demo_bank_v1.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCrypt;
@@ -10,6 +11,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
+
+import javax.servlet.http.HttpSession;
 
 @Controller
 public class AuthController {
@@ -29,19 +32,18 @@ public class AuthController {
     @PostMapping("/login")
     public String login(@RequestParam("email") String email,
                         @RequestParam("password") String password,
-                        @RequestParam("_token")String token, Model model){
+                        @RequestParam("_token")String token,
+                        Model model,
+                        HttpSession httpSession){
         if(email.isEmpty() || email == null || password.isEmpty() || password == null){
             model.addAttribute("error","Username or Password Cannot be Empty");
             return "login";
         }
         String getEmailInDatabase = userRepository.getUserEmail(email);
-        if(!getEmailInDatabase.isEmpty() || getEmailInDatabase != null){
+        if(getEmailInDatabase != null){
             String getPasswordInDatabase = userRepository.getUserPassword(getEmailInDatabase);
             if(!BCrypt.checkpw(password,getPasswordInDatabase)){
                 model.addAttribute("error","Incorect Username and password");
-                return "login";
-            }else {
-                model.addAttribute("success","Login Successfully");
                 return "login";
             }
         }else {
@@ -49,6 +51,19 @@ public class AuthController {
             return "error";
         }
 
-        return "";
+        int verified = userRepository.isVerified(getEmailInDatabase);
+        if(verified != 1){
+            String msg = "This Account is not yet Verified,please check email and verify account";
+            model.addAttribute("error",msg);
+            return "login";
+        }
+
+        User user = userRepository.getUserDetails(getEmailInDatabase);
+
+        httpSession.setAttribute("user",user);
+        httpSession.setAttribute("token",token);
+        httpSession.setAttribute("authenticated",true);
+
+        return "redirect:/app/dashboard";
     }
 }
