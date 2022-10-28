@@ -28,4 +28,12 @@ public interface AccountRepository extends CrudRepository<Account,Integer> {
                            @Param("account_number") String account_number,
                            @Param("account_name") String account_name,
                            @Param("account_type")String account_type);
+
+    @Query(value = "select balance from account where user_id = :user_id and account_id = :account_id",nativeQuery = true)
+    double getAccountBalance(@Param("user_id") int user_id,@Param("account_id") int account_id);
+
+    @Modifying
+    @Query(value = "update account set balance = :new_balance where account_id = :account_id",nativeQuery = true)
+    @Transactional
+    void changeAccountBalanceById(@Param("new_balance") double new_balance,@Param("account_id") int account_id);
 }

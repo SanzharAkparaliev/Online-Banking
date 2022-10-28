@@ -20,7 +20,9 @@ public class Account {
     @Column(columnDefinition = "DECIMAL(18, 2) DEFAULT 0.00")
 
     private BigDecimal balance;
+    @Column(columnDefinition = "DEFAULT NOW()")
     private LocalDateTime created_at;
+    @Column(columnDefinition = "DEFAULT NOW()")
     private LocalDateTime updated_at;
 
     public int getAccount_id() {
