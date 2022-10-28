@@ -103,4 +103,45 @@ public class TransactController {
         redirectAttributes.addFlashAttribute("success",successMessage);
         return "redirect:/app/dashboard";
     }
+
+    @PostMapping("/withdraw")
+    public String withdraw(@RequestParam("withdrawal_amount") String withdrawalAmount,
+                           @RequestParam("account_id") String accountId,
+                           HttpSession session,
+                           RedirectAttributes redirectAttributes){
+        String errorMessage;
+        String successMessage;
+        //check for empty values;
+        if(withdrawalAmount.isEmpty() || accountId.isEmpty()){
+            errorMessage = "Withdrawal Amount and Account Withdrawing From Cannot be Empty";
+            redirectAttributes.addFlashAttribute("error",errorMessage);
+            return "redirect:/app/dashboard";
+        }
+
+        //covert variables
+        double withdrawal_amount = Double.parseDouble(withdrawalAmount);
+        int account_id = Integer.parseInt(accountId);
+
+        //check for 0 (zero) values
+        if(withdrawal_amount == 0){
+            errorMessage = "Withdrawal Amount Cannot be of 0 (Zero) value,please enter a value greater then 0 (zero)";
+            redirectAttributes.addFlashAttribute("error",errorMessage);
+            return "redirect:/app/dashboard";
+        }
+
+        //get logged in user
+        User user = (User) session.getAttribute("user");
+
+        //get current balance
+        currentBalance = accountRepository.getAccountBalance(user.getUser_id(), account_id);
+
+        //get new balance
+        newBalance = currentBalance - withdrawal_amount;
+
+        //update account balance
+        accountRepository.changeAccountBalanceById(newBalance,account_id);
+        successMessage = "Withdrawal Successfully";
+        redirectAttributes.addFlashAttribute("success",successMessage);
+        return "redirect:/app/dashboard";
+    }
 }
