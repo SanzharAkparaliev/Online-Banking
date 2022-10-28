@@ -16,6 +16,8 @@ import javax.servlet.http.HttpSession;
 public class TransactController {
     @Autowired
     private AccountRepository accountRepository;
+    double newBalance;
+    double currentBalance;
 
     @PostMapping("/deposit")
     public String deposit(@RequestParam("deposit_amount") String depositAmount,
@@ -39,11 +41,66 @@ public class TransactController {
         }
 
         //todo:update balance
-        double currentBalance = accountRepository.getAccountBalance(user.getUser_id(), acc_id);
-        double newBalance = currentBalance + depositAmountValue;
+        currentBalance = accountRepository.getAccountBalance(user.getUser_id(), acc_id);
+        newBalance = currentBalance + depositAmountValue;
         //update account
         accountRepository.changeAccountBalanceById(newBalance,acc_id);
         redirectAttributes.addFlashAttribute("success","Amount Deposited Successfully");
+        return "redirect:/app/dashboard";
+    }
+
+    @PostMapping("/transfer")
+    public String transfer(@RequestParam("transfer_from") String transfer_from,
+                           @RequestParam("transfer_to") String transfer_to,
+                           @RequestParam("transfer_amount") String transfer_amount,
+                           HttpSession session,
+                           RedirectAttributes redirectAttributes){
+        String errorMessage;
+        //check for empty fields
+        if(transfer_from.isEmpty() || transfer_to.isEmpty() || transfer_amount.isEmpty()){
+            errorMessage = "The account transfering from and to along with the amount be empty";
+            redirectAttributes.addFlashAttribute("error",errorMessage);
+            return "redirect:/app/dashboard";
+        }
+
+        //convert variables
+        int transferFromId = Integer.parseInt(transfer_from);
+        int transferToId = Integer.parseInt(transfer_to);
+        double transferAmount = Double.parseDouble(transfer_amount);
+
+        //check if transfering into the same account
+        if(transferFromId == transferToId){
+            errorMessage = "Cannot Transfer Into the same Account,Please select the appropriate account to perform transfer";
+            redirectAttributes.addFlashAttribute("error",errorMessage);
+            return "redirect:/app/dashboard";
+        }
+
+        //check for 0 (zero) values;
+        if(transferAmount == 0){
+            errorMessage = "Cannot Transfer an amount of 0 (Zero) value,please enter a value greater then 0 (Zero)";
+            redirectAttributes.addFlashAttribute("error",errorMessage);
+            return "redirect:/app/dashboard";
+        }
+
+        //get logged in user
+        User user = (User)session.getAttribute("user");
+
+        //get current balance
+        double currentBalanceOfAccountTransferringFrom = accountRepository.getAccountBalance(user.getUser_id(),transferFromId);
+        double currentBalanceOfAccountTransferringTo = accountRepository.getAccountBalance(user.getUser_id(),transferToId);
+
+        //set new balance
+        double newBalanceOfAccountTransferringFrom = currentBalanceOfAccountTransferringFrom - transferAmount;
+         double newBalanceOfAccountTransferringTo = currentBalanceOfAccountTransferringTo + transferAmount;
+
+        //changed the balance of the account transferring from
+        accountRepository.changeAccountBalanceById(newBalanceOfAccountTransferringFrom,transferFromId);
+
+        //changed the balance of the Account Transferring to
+        accountRepository.changeAccountBalanceById(newBalanceOfAccountTransferringTo,transferToId);
+
+        String successMessage = "Amount Transferred Successfully";
+        redirectAttributes.addFlashAttribute("success",successMessage);
         return "redirect:/app/dashboard";
     }
 }
