@@ -3,6 +3,7 @@ package com.demo_bank_v1.controller;
 import com.demo_bank_v1.model.User;
 import com.demo_bank_v1.repository.AccountRepository;
 import com.demo_bank_v1.repository.PaymentRepository;
+import com.demo_bank_v1.repository.TransactRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -11,7 +12,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpSession;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Controller
@@ -21,8 +21,13 @@ public class TransactController {
     private AccountRepository accountRepository;
     @Autowired
     private PaymentRepository paymentRepository;
+
+    @Autowired
+    private TransactRepository transactRepository;
+
     double newBalance;
     double currentBalance;
+    LocalDateTime currenDateTime = LocalDateTime.now();
 
     @PostMapping("/deposit")
     public String deposit(@RequestParam("deposit_amount") String depositAmount,
@@ -50,6 +55,10 @@ public class TransactController {
         newBalance = currentBalance + depositAmountValue;
         //update account
         accountRepository.changeAccountBalanceById(newBalance,acc_id);
+
+        //log Successful Transaction
+        transactRepository.logTransaction(acc_id,"deposit",depositAmountValue,"online","success","Deposit Transaction Successful",currenDateTime);
+
         redirectAttributes.addFlashAttribute("success","Amount Deposited Successfully");
         return "redirect:/app/dashboard";
     }
@@ -87,11 +96,23 @@ public class TransactController {
             return "redirect:/app/dashboard";
         }
 
+
+
         //get logged in user
         User user = (User)session.getAttribute("user");
 
         //get current balance
         double currentBalanceOfAccountTransferringFrom = accountRepository.getAccountBalance(user.getUser_id(),transferFromId);
+
+        //check if transfer amount is more than current balance
+        if(currentBalanceOfAccountTransferringFrom < transferAmount){
+            errorMessage = "You have insufficient Funds to perform this Transfer!";
+            //log failed transaction
+            transactRepository.logTransaction(transferFromId,"Transfer",transferAmount,"online","filed","Insufficient Funds",currenDateTime);
+            redirectAttributes.addFlashAttribute("error",errorMessage);
+            return "redirect:/app/dashboard";
+        }
+
         double currentBalanceOfAccountTransferringTo = accountRepository.getAccountBalance(user.getUser_id(),transferToId);
 
         //set new balance
@@ -104,7 +125,11 @@ public class TransactController {
         //changed the balance of the Account Transferring to
         accountRepository.changeAccountBalanceById(newBalanceOfAccountTransferringTo,transferToId);
 
+        //log successful Transaction
+        transactRepository.logTransaction(transferFromId,"Transfer",transferAmount,"online","success","Transfer Transaction Successful",currenDateTime);
+
         String successMessage = "Amount Transferred Successfully";
+
         redirectAttributes.addFlashAttribute("success",successMessage);
         return "redirect:/app/dashboard";
     }
@@ -140,11 +165,25 @@ public class TransactController {
         //get current balance
         currentBalance = accountRepository.getAccountBalance(user.getUser_id(), account_id);
 
+        //check if transfer amount is more than current balance
+        if(currentBalance < withdrawal_amount){
+            errorMessage = "You have insufficient Funds to perform this Transfer!";
+            //log failed transaction
+            transactRepository.logTransaction(account_id,"Withdrawal",withdrawal_amount,"online","filed","Insufficient Funds",currenDateTime);
+            redirectAttributes.addFlashAttribute("error",errorMessage);
+
+            return "redirect:/app/dashboard";
+        }
         //get new balance
         newBalance = currentBalance - withdrawal_amount;
 
         //update account balance
         accountRepository.changeAccountBalanceById(newBalance,account_id);
+
+
+        //log successful Transaction
+        transactRepository.logTransaction(account_id,"Withdrawal",withdrawal_amount,"online","success","Withdrawal Transaction Successful",currenDateTime);
+
         successMessage = "Withdrawal Successfully";
         redirectAttributes.addFlashAttribute("success",successMessage);
         return "redirect:/app/dashboard";
@@ -185,6 +224,14 @@ public class TransactController {
         //check if payment amount is more than current balance
         if(currentBalance < paymentAmount){
             String errorMessage = "You have insufficient Funds to perform this payment";
+
+            String reasonCode= "Could not Processed Payment due to insufficient funds!";
+            paymentRepository.makePayment(accountId,beneficiary,account_number,paymentAmount,reference,"filed",reasonCode,currenDateTime);
+
+            //log failed transaction
+            transactRepository.logTransaction(accountId,"Payment",paymentAmount,"online","filed","Insufficient Funds",currenDateTime);
+            redirectAttributes.addFlashAttribute("error",errorMessage);
+
             redirectAttributes.addFlashAttribute("error",errorMessage);
             return "redirect:/app/dashboard";
         }
@@ -194,11 +241,14 @@ public class TransactController {
 
         //make payment
         String reasonCode= "Payment Processed Successfully";
-        LocalDateTime currenDateTime = LocalDateTime.now();
         paymentRepository.makePayment(accountId,beneficiary,account_number,paymentAmount,reference,"success",reasonCode,currenDateTime);
 
         //update account paying from
         accountRepository.changeAccountBalanceById(newBalance,accountId);
+
+
+        //log successful Transaction
+        transactRepository.logTransaction(accountId,"Payment",paymentAmount,"online","success","Payment Transaction Successful",currenDateTime);
 
         String successMessage = reasonCode;
         redirectAttributes.addFlashAttribute("success",successMessage);
