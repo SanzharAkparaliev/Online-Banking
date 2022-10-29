@@ -9,9 +9,9 @@
             Easy-Way Bank
         </div>
         <nav class="navigation">
-            <li><a href="">Dashboard</a></li>
-            <li><a href="">Payment History</a></li>
-            <li><a href="">Transaction History</a></li>
+            <li><a href="/app/dashboard">Dashboard</a></li>
+            <li><a href="/app/payment_history">Payment History</a></li>
+            <li><a href="/app/transact_history">Transaction History</a></li>
         </nav>
         <div class="text-white ml-auto display-name ">
             <i class="fa fa-circle text-success mr-2"></i>Welcome: <span style="font-weight: 200; margin-right: 30px;">${user.first_name} ${user.last_name}</span>

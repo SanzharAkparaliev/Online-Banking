@@ -1,8 +1,10 @@
 package com.demo_bank_v1.controller;
 
 import com.demo_bank_v1.model.Account;
+import com.demo_bank_v1.model.PaymentHistory;
 import com.demo_bank_v1.model.User;
 import com.demo_bank_v1.repository.AccountRepository;
+import com.demo_bank_v1.repository.PaymentHistoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,6 +20,8 @@ import java.util.List;
 public class AppController {
     @Autowired
     private AccountRepository accountRepository;
+    @Autowired
+    private PaymentHistoryRepository paymentHistoryRepository;
 
     @GetMapping("/dashboard")
     public ModelAndView getDashboardPage(HttpSession session){
@@ -31,5 +35,23 @@ public class AppController {
         getDashboardPage.addObject("totalBalance",totalAccountBalance);
 
         return getDashboardPage;
+    }
+
+    @GetMapping("/payment_history")
+    public ModelAndView getPaymentHistory(HttpSession session){
+        // Set View:
+        ModelAndView getPaymentHistoryPage = new ModelAndView("paymentHistory");
+
+        // Get Logged In User:\
+        User user = (User) session.getAttribute("user");
+
+        // Get Payment History / Records:
+        List<PaymentHistory> userPaymentHistory = paymentHistoryRepository.getPaymentRecordsById(user.getUser_id());
+        System.out.println(userPaymentHistory.toString());
+
+        getPaymentHistoryPage.addObject("payment_history", userPaymentHistory);
+
+        return getPaymentHistoryPage;
+
     }
 }
