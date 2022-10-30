@@ -2,9 +2,11 @@ package com.demo_bank_v1.controller;
 
 import com.demo_bank_v1.model.Account;
 import com.demo_bank_v1.model.PaymentHistory;
+import com.demo_bank_v1.model.TransactionHistory;
 import com.demo_bank_v1.model.User;
 import com.demo_bank_v1.repository.AccountRepository;
 import com.demo_bank_v1.repository.PaymentHistoryRepository;
+import com.demo_bank_v1.repository.TransactionHistoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,6 +24,8 @@ public class AppController {
     private AccountRepository accountRepository;
     @Autowired
     private PaymentHistoryRepository paymentHistoryRepository;
+    @Autowired
+    private TransactionHistoryRepository transactionHistoryRepository;
 
     @GetMapping("/dashboard")
     public ModelAndView getDashboardPage(HttpSession session){
@@ -53,5 +57,22 @@ public class AppController {
 
         return getPaymentHistoryPage;
 
+    }
+
+    @GetMapping("/transact_history")
+    public ModelAndView getTransactHistory(HttpSession session){
+        // Set View:
+        ModelAndView getTransactionHistoryPage = new ModelAndView("transactHistory");
+
+        // Get Logged In User:\
+        User user = (User) session.getAttribute("user");
+
+        // Get Payment History / Records:
+        List<TransactionHistory> userTransactionHistory = transactionHistoryRepository.getTransactionRecordsById(user.getUser_id());
+        System.out.println(userTransactionHistory.toString());
+
+        getTransactionHistoryPage.addObject("transact_history",userTransactionHistory);
+
+        return getTransactionHistoryPage;
     }
 }
