@@ -11,7 +11,7 @@ public class MyErrorController implements ErrorController {
     public ModelAndView getError(){
         ModelAndView getErrorPage = new ModelAndView("err");
         getErrorPage.addObject("PageTitle","Errors");
-        getErrorPage.addObject("error", "Server Error");
+        getErrorPage.addObject("error", "Not Found");
         return getErrorPage;
     }
 }
